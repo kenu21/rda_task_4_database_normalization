@@ -8,15 +8,6 @@ CREATE TABLE Countries (
     PRIMARY KEY (ID)
 );
 
-CREATE TABLE Cities(
-	ID INT AUTO_INCREMENT,
-	Name VARCHAR(50) NOT NULL,
-	CountryID INT,
-	FOREIGN KEY (CountryID) REFERENCES Countries(ID) ON DELETE SET NULL,
-	PRIMARY KEY (ID)
-);
-CREATE INDEX idx_Cities_CountryID ON Cities(CountryID);
-
 CREATE TABLE Products(
 	ID INT AUTO_INCREMENT,
 	Name VARCHAR(50) NOT NULL,
@@ -26,22 +17,21 @@ CREATE TABLE Products(
 CREATE TABLE Warehouses(
 	ID INT AUTO_INCREMENT,
 	Name VARCHAR(50) NOT NULL,
-	CityID INT,
-	FOREIGN KEY (CityID) REFERENCES Cities(ID) ON DELETE SET NULL,
+	CountryID INT,
+	FOREIGN KEY (CountryID) REFERENCES Countries(ID) ON DELETE SET NULL,
 	WarehouseAddress VARCHAR(50),
 	PRIMARY KEY (ID)
 );
-CREATE INDEX idx_Warehouses_CityID ON Warehouses(CityID);
+CREATE INDEX idx_Warehouses_CountryID ON Warehouses(CountryID);
 
 
 CREATE TABLE ProductInventory(
-	ID INT AUTO_INCREMENT,
 	ProductID INT,
-	FOREIGN KEY (ProductID) REFERENCES Products(ID) ON DELETE SET NULL,
+	FOREIGN KEY (ProductID) REFERENCES Products(ID),
 	WarehouseAmount INT,
 	WarehouseID INT,
-	FOREIGN KEY (WarehouseID) REFERENCES Warehouses(ID) ON DELETE SET NULL,
-	PRIMARY KEY (ID)
+	FOREIGN KEY (WarehouseID) REFERENCES Warehouses(ID),
+	PRIMARY KEY (ProductID, WarehouseID)
 );
 CREATE INDEX idx_ProductInventory_ProductID ON ProductInventory(ProductID);
 CREATE INDEX idx_ProductInventory_WarehouseID ON ProductInventory(WarehouseID);
@@ -51,17 +41,12 @@ SET @Country1ID = LAST_INSERT_ID();
 INSERT INTO Countries (Name) VALUES ('Country2');
 SET @Country2ID = LAST_INSERT_ID();
 
-INSERT INTO Cities (Name, CountryID) VALUES ('City-1', @Country1ID);
-SET @City1ID = LAST_INSERT_ID();
-INSERT INTO Cities (Name, CountryID) VALUES ('City-2', @Country2ID);
-SET @City2ID = LAST_INSERT_ID();
-
 INSERT INTO Products (Name) VALUES ('AwesomeProduct');
 SET @Product1ID = LAST_INSERT_ID();
 
-INSERT INTO Warehouses (Name, CityID, WarehouseAddress) VALUES ('Warehouse-1', @City1ID, 'Address-1');
+INSERT INTO Warehouses (Name, CountryID, WarehouseAddress) VALUES ('Warehouse-1', @Country1ID, 'City-1, Street-1');
 SET @Warehouse1ID = LAST_INSERT_ID();
-INSERT INTO Warehouses (Name, CityID, WarehouseAddress) VALUES ('Warehouse-2', @City2ID, 'Address-2');
+INSERT INTO Warehouses (Name, CountryID, WarehouseAddress) VALUES ('Warehouse-2', @Country2ID, 'City-2, Street-2');
 SET @Warehouse2ID = LAST_INSERT_ID();
 
 INSERT INTO ProductInventory (ProductID, WarehouseAmount, WarehouseID) 

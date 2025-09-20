@@ -26,12 +26,13 @@ CREATE INDEX idx_Warehouses_CountryID ON Warehouses(CountryID);
 
 
 CREATE TABLE ProductInventory(
+	ID INT AUTO_INCREMENT,
 	ProductID INT,
-	FOREIGN KEY (ProductID) REFERENCES Products(ID),
+	FOREIGN KEY (ProductID) REFERENCES Products(ID) ON DELETE SET NULL,
 	WarehouseAmount INT,
 	WarehouseID INT,
-	FOREIGN KEY (WarehouseID) REFERENCES Warehouses(ID),
-	PRIMARY KEY (ProductID, WarehouseID)
+	FOREIGN KEY (WarehouseID) REFERENCES Warehouses(ID) ON DELETE SET NULL,
+	PRIMARY KEY (ID)
 );
 CREATE INDEX idx_ProductInventory_ProductID ON ProductInventory(ProductID);
 CREATE INDEX idx_ProductInventory_WarehouseID ON ProductInventory(WarehouseID);

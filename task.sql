@@ -17,16 +17,6 @@ CREATE TABLE Cities(
 );
 CREATE INDEX idx_Cities_CountryID ON Cities(CountryID);
 
-
-CREATE TABLE Streets(
-	ID INT AUTO_INCREMENT,
-	Name VARCHAR(50) NOT NULL,
-	CityID INT,
-	FOREIGN KEY (CityID) REFERENCES Cities(ID) ON DELETE SET NULL,
-	PRIMARY KEY (ID)
-);
-CREATE INDEX idx_Streets_CityID ON Streets(CityID);
-
 CREATE TABLE Products(
 	ID INT AUTO_INCREMENT,
 	Name VARCHAR(50) NOT NULL,
@@ -36,11 +26,13 @@ CREATE TABLE Products(
 CREATE TABLE Warehouses(
 	ID INT AUTO_INCREMENT,
 	Name VARCHAR(50) NOT NULL,
-	CountryID INT,
-	FOREIGN KEY (CountryID) REFERENCES Countries(ID) ON DELETE SET NULL,
+	CityID INT,
+	FOREIGN KEY (CityID) REFERENCES Cities(ID) ON DELETE SET NULL,
+	WarehouseAddress VARCHAR(50),
 	PRIMARY KEY (ID)
 );
-CREATE INDEX idx_Warehouses_CountryID ON Warehouses(CountryID);
+CREATE INDEX idx_Warehouses_CityID ON Warehouses(CityID);
+
 
 CREATE TABLE ProductInventory(
 	ID INT AUTO_INCREMENT,
@@ -52,6 +44,7 @@ CREATE TABLE ProductInventory(
 	PRIMARY KEY (ID)
 );
 CREATE INDEX idx_ProductInventory_ProductID ON ProductInventory(ProductID);
+CREATE INDEX idx_ProductInventory_WarehouseID ON ProductInventory(WarehouseID);
 
 INSERT INTO Countries (Name) VALUES ('Country1');
 SET @Country1ID = LAST_INSERT_ID();
@@ -63,17 +56,12 @@ SET @City1ID = LAST_INSERT_ID();
 INSERT INTO Cities (Name, CountryID) VALUES ('City-2', @Country2ID);
 SET @City2ID = LAST_INSERT_ID();
 
-INSERT INTO Streets (Name, CityID) VALUES ('Street-1', @City1ID);
-SET @Street1ID = LAST_INSERT_ID();
-INSERT INTO Streets (Name, CityID) VALUES ('Street-2', @City2ID);
-SET @Street2ID = LAST_INSERT_ID();
-
 INSERT INTO Products (Name) VALUES ('AwesomeProduct');
 SET @Product1ID = LAST_INSERT_ID();
 
-INSERT INTO Warehouses (Name, CountryID) VALUES ('Warehouse-1', @Country1ID);
+INSERT INTO Warehouses (Name, CityID, WarehouseAddress) VALUES ('Warehouse-1', @City1ID, 'Address-1');
 SET @Warehouse1ID = LAST_INSERT_ID();
-INSERT INTO Warehouses (Name, CountryID) VALUES ('Warehouse-2', @Country2ID);
+INSERT INTO Warehouses (Name, CityID, WarehouseAddress) VALUES ('Warehouse-2', @City2ID, 'Address-2');
 SET @Warehouse2ID = LAST_INSERT_ID();
 
 INSERT INTO ProductInventory (ProductID, WarehouseAmount, WarehouseID) 
